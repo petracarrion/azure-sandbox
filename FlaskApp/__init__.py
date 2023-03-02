@@ -3,7 +3,7 @@ import os
 from uuid import uuid4
 
 from azure.cosmos import ContainerProxy, DatabaseProxy
-from flask import Flask
+from flask import Flask, redirect, url_for, request
 
 import azure.cosmos.cosmos_client as cosmos_client
 from azure.cosmos.partition_key import PartitionKey
@@ -40,15 +40,16 @@ def create_reading(reading_value):
 
 @app.route("/create", methods=['POST'])
 def create_item():
-    create_reading(1000)
-    return "Created"
+    reading_value = request.form.get('reading_value')
+    create_reading(reading_value)
+    return redirect(url_for('index'))
 
 
 @app.route("/reset", methods=['POST'])
 def reset_items():
     init_container(reset=True)
     create_reading(0)
-    return "Reset"
+    return redirect(url_for('index'))
 
 
 @app.route("/list")
@@ -71,7 +72,7 @@ def index():
         </tr>
     '''
     all_items = list_items()
-    next_value = all_items[-1]['reading_value'] + 1
+    next_value = int(all_items[-1]['reading_value']) + 1
     for item in all_items:
         result += f'''
         <tr>
