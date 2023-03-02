@@ -8,9 +8,12 @@
       "name": "req",
       "methods": [
         "get",
-        "post"
+        "post",
+        "put",
+        "delete",
+        "patch"
       ],
-      "route": "/{*route}"
+      "route": "{*route}"
     },
     {
       "type": "http",
