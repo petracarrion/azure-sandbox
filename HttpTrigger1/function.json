@@ -9,8 +9,7 @@
       "methods": [
         "get",
         "post"
-      ],
-      "route": "{*route}"
+      ]
     },
     {
       "type": "http",
