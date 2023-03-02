@@ -21,6 +21,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Replace secrets
+        uses: jwsi/secret-parser@v1
+        with:
+          filename: FlaskApp/__init__.py
+          secret-name: COSMOS_HOST
+          secret-value: ${{ secrets.COSMOS_HOST }}
+
+      - name: Replace secrets
+        uses: jwsi/secret-parser@v1
+        with:
+          filename: FlaskApp/__init__.py
+          secret-name: COSMOS_KEY
+          secret-value: ${{ secrets.COSMOS_KEY }}
+
       - name: Setup Python version
         uses: actions/setup-python@v1
         with:

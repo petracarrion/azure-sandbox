@@ -1,21 +1,24 @@
+import os
+
 from flask import Flask
 
 app = Flask(__name__)
 
+COSMOS_HOST = os.environ.get('COSMOS_HOST', '${{ secrets.COSMOS_HOST }}')
+COSMOS_KEY = os.environ.get('COSMOS_KEY', '${{ secrets.COSMOS_KEY }}')
+
+
 @app.route("/")
 def index():
     return (
-        "Try /hello/Chris for parameterized Flask route.\n"
-        "Try /module for module import guidance"
+        "Try /hello/Petra for parameterized Flask route.\n"
+        f"Try /module for module import guidance {COSMOS_HOST} {COSMOS_KEY}"
     )
+
 
 @app.route("/hello/<name>", methods=['GET'])
 def hello(name: str):
     return f"hello {name}"
-
-@app.route("/module")
-def module():
-    return f"loaded from FlaskApp.package.module"
 
 
 if __name__ == "__main__":
