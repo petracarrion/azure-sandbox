@@ -1,5 +1,4 @@
 {
-  "scriptFile": "__init__.py",
   "bindings": [
     {
       "authLevel": "anonymous",
@@ -9,8 +8,7 @@
       "methods": [
         "get",
         "post"
-      ],
-      "route": "{*route}"
+      ]
     },
     {
       "type": "http",
