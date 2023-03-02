@@ -6,7 +6,6 @@ from azure.cosmos import ContainerProxy, DatabaseProxy
 from flask import Flask
 
 import azure.cosmos.cosmos_client as cosmos_client
-import azure.cosmos.exceptions as exceptions
 from azure.cosmos.partition_key import PartitionKey
 
 app = Flask(__name__)
@@ -30,24 +29,25 @@ def init_container(reset=False):
 container: ContainerProxy = init_container()
 
 
-def create_reading(reading_timestamp, reading_value):
+def create_reading(reading_value):
     reading = {
         'id': str(uuid4()),
-        'reading_timestamp': reading_timestamp,
+        'reading_timestamp': datetime.now().timestamp(),
         'reading_value': reading_value
     }
     container.create_item(body=reading)
 
 
-@app.route("/create")
+@app.route("/create", methods=['POST'])
 def create_item():
-    create_reading(datetime.now().timestamp(), 1000)
+    create_reading(1000)
     return "Created"
 
 
-@app.route("/reset")
+@app.route("/reset", methods=['POST'])
 def reset_items():
     init_container(reset=True)
+    create_reading(0)
     return "Reset"
 
 
@@ -55,7 +55,7 @@ def reset_items():
 def list_items():
     all_items = list(container.read_all_items())
     all_items = [{
-        'reading_timestamp': item['reading_timestamp'],
+        'reading_timestamp': datetime.fromtimestamp(item['reading_timestamp']),
         'reading_value': item['reading_value']
     } for item in all_items]
     return all_items
@@ -71,6 +71,7 @@ def index():
         </tr>
     '''
     all_items = list_items()
+    next_value = all_items[-1]['reading_value'] + 1
     for item in all_items:
         result += f'''
         <tr>
@@ -80,13 +81,13 @@ def index():
         '''
     result += '</table>'
     result += f'''
-    <form>
-        <input name="reading_value" type="number" min="45" value="45"/>
+    <form action="/create" method="POST">
+        <input name="reading_value" type="number" min="{next_value}" value="{next_value}"/>
         <input value="Add" type="submit" />
     </form>
     '''
     result += f'''
-    <form>
+    <form action="/reset" method="POST">
         <input value="Reset All" type="submit" />
     </form>
     '''
